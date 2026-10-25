@@ -18,26 +18,18 @@
 
 ## 📌 Overview
 
-Offline seccomp-bpf profile auditor (Docker, OCI, systemd, Firejail)
+OSeccomp is an offline auditor for seccomp-bpf profiles. It parses Docker/OCI JSON, systemd unit filters, Firejail, LXC and plain syscall-list formats, resolves the effective per-syscall policy, and compares it against a baseline. Findings are scored and mapped to CWE and MITRE ATT&CK.
 
 ---
 
 ## ✨ Features
 
-- Tolerant JSON loader — BOM, // and /* */ comments, trailing commas, single-quoted keys; never crashes
-- Docker / Moby default.json & OCI runtime-spec linux.seccomp parser (names, legacy name, args, errnoRet, includes / excludes, flags, listenerPath)
-- systemd unit parser — SystemCallFilter= (allow / ~deny lists, @groups, :errno), SystemCallArchitectures=, SystemCallErrorNumber=, NoNewPrivileges=, SystemCallLog=
-- Firejail profile parser — seccomp, seccomp.drop, seccomp.keep, seccomp.block-secondary, memory-deny-*
-- LXC seccomp policy (v1 / v2 allowlist / denylist)
-- Plain syscall list / Chromium-Flatpak style notes
-- Effective-policy engine — per-syscall resolution of unconditional vs argument-filtered rules
-- 30+ rules: fail-open default, dangerous syscalls, CLONE_NEWUSER, ERRNO 0 fake-success, TRACE / NOTIFY, architecture pinning, x32 ABI, SPEC_ALLOW, ...
-- Baseline diff vs Docker default / RuntimeDefault
-- CWE + MITRE ATT&CK mapping, severity, remediation
-- Weighted 0–100 hardening score and A+…F grade
-- Filesystem scan (--root DIR) of well-known paths
-- Export TXT / Markdown / JSON / CSV / SARIF 2.1.0
-- Built-in self-test (--demo) and full CLI mode
+- Tolerant JSON loader (comments, trailing commas) plus Docker/OCI seccomp parser
+- systemd SystemCallFilter/SystemCallArchitectures and Firejail/LXC profile parsing
+- Effective-policy engine resolving unconditional vs argument-filtered rules
+- 30+ rules covering fail-open defaults, dangerous syscalls and architecture pinning
+- Baseline diff against Docker default / RuntimeDefault
+- CWE/MITRE mapping, 0-100 score and A+ to F grade with hardened-profile generation
 
 ---
 
@@ -51,7 +43,10 @@ Offline seccomp-bpf profile auditor (Docker, OCI, systemd, Firejail)
 ## 🚀 Usage
 
 ```bash
-./OSeccomp
+./OSeccomp -p default.json
+./OSeccomp -u /etc/systemd/system/myservice.service --effective
+./OSeccomp --scan --root / --fail-on high
+./OSeccomp --help
 ```
 
 ---
